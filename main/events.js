@@ -21,7 +21,8 @@ const events = [
     },
     {
          id: 'finalize_day', type: 'system',
-         action: finalizeDay // 실제 하루 종료 로직 호출 (메인 스크립트에 정의된 함수)
+         // action: finalizeDay // <- 기존 오류 발생 코드
+         action: 'finalizeDay' // <- 수정된 코드: 함수 이름을 문자열로 전달
     },
 
     // --- 일일 활동 이벤트 (type: 'daily') ---
@@ -106,3 +107,6 @@ const events = [
     }
     // --- 추후 이곳에 더 많은 이벤트를 추가할 수 있습니다 ---
 ];
+
+// finalizeDay 함수는 메인 스크립트(HTML 파일 내)에 정의되어 있어야 합니다.
+// 이 파일은 events 배열만 정의합니다.
