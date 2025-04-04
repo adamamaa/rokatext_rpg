@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>텍스트 RPG: 이등병의 540일</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* 기본 폰트 및 다크 테마 기본 설정 */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1f2937; /* Tailwind gray-800 */
+            color: #d1d5db; /* Tailwind gray-300 */
+        }
+        /* 피로도 바 스타일 (어두운 배경에 맞게 조정) */
+        .fatigue-bar-bg {
+            background-color: #4b5563; /* Tailwind gray-600 */
+            border-radius: 0.375rem; /* rounded-md */
+            overflow: hidden;
+            height: 1.5rem; /* h-6 */
+        }
+        .fatigue-bar-fill {
+            /* 피로도 바 색상은 경고 의미로 빨간색 유지 */
+            background-color: #ef4444; /* Tailwind red-500 */
+            height: 100%;
+            transition: width 0.3s ease-in-out;
+            text-align: center;
+            color: white;
+            font-weight: 500; /* font-medium */
+            line-height: 1.5rem; /* leading-6 */
+            border-radius: 0.375rem; /* rounded-md */
+        }
+        /* 메시지 영역 스타일 (어두운 테마) */
+        #message-area {
+            min-height: 3rem; /* 최소 높이 설정 */
+            background-color: #374151; /* Tailwind gray-700 */
+            border-radius: 0.375rem; /* rounded-md */
+            padding: 0.5rem 1rem; /* p-2 px-4 */
+            font-style: italic;
+            color: #9ca3af; /* Tailwind gray-400 */
+        }
+        /* 버튼 기본 스타일 (녹색 계열) */
+        .choice-button {
+            transition: background-color 0.2s ease;
+            background-color: #16a34a; /* Tailwind green-600 */
+            color: white;
+        }
+        .choice-button:hover {
+            background-color: #15803d; /* Tailwind green-700 */
+        }
+        .choice-button:active {
+            background-color: #166534; /* Tailwind green-800 */
+        }
+        /* '다음 날로' 버튼 스타일 (회색 계열) */
+        .next-day-button {
+             background-color: #4b5563; /* Tailwind gray-600 */
+             color: white;
+        }
+        .next-day-button:hover {
+             background-color: #374151; /* Tailwind gray-700 */
+        }
+         .next-day-button:active {
+             background-color: #1f2937; /* Tailwind gray-800 */
+        }
+        /* 게임 오버 버튼 (빨간색 유지) */
+        .game-over-button {
+             background-color: #dc2626; /* Tailwind red-600 */
+             color: white;
+        }
+         .game-over-button:hover {
+             background-color: #b91c1c; /* Tailwind red-700 */
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-gray-900 p-6 rounded-lg shadow-md w-full max-w-2xl border border-gray-700">
+        <h1 class="text-2xl font-bold mb-4 text-center text-green-400">이등병의 540일</h1>
+
+        <div id="character-info" class="mb-4 p-4 bg-gray-800 rounded-md border border-gray-700">
+            <h2 class="text-lg font-semibold mb-2 text-green-300">캐릭터 정보</h2>
+            <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-gray-400">
+                <p><strong>이름:</strong> <span id="char-name"></span></p>
+                <p><strong>나이:</strong> <span id="char-age"></span>세</p>
+                <p><strong>키:</strong> <span id="char-height"></span>cm</p>
+                <p><strong>몸무게:</strong> <span id="char-weight"></span>kg</p>
+                <p><strong>흡연 여부:</strong> <span id="char-smoker"></span></p>
+                <p><strong>여자친구:</strong> <span id="char-girlfriend"></span></p>
+                <p><strong>체력:</strong> <span id="char-stamina"></span></p>
+            </div>
+        </div>
+
+        <div class="mb-4 p-4 bg-gray-800 rounded-md border border-gray-700">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="text-lg font-semibold text-green-300">상태</h2>
+                <p class="text-sm font-medium text-gray-400">D+<span id="current-day">1</span> / 540</p>
+            </div>
+            <div>
+                <label for="fatigue-bar" class="block text-sm font-medium text-gray-400 mb-1">피로도 (<span id="fatigue-value">0</span>/100)</label>
+                <div class="fatigue-bar-bg">
+                    <div id="fatigue-bar-fill" class="fatigue-bar-fill" style="width: 0%;">
+                        <span id="fatigue-text">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="event-text" class="mb-4 p-4 bg-gray-800 rounded-md border border-gray-700 min-h-[100px] text-gray-300">
+            </div>
+
+        <div id="message-area" class="mb-4 text-sm">
+            </div>
+
+        <div id="choices" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            </div>
+
+        <div id="game-over" class="hidden mt-6 p-4 bg-red-900 border border-red-700 rounded-md text-center">
+            <p class="text-xl font-bold text-red-300">게임 오버</p>
+            <p id="game-over-reason" class="text-red-400 mt-1"></p>
+            <button onclick="location.reload()" class="game-over-button mt-4 px-4 py-2 rounded-md transition">다시 시작</button>
+        </div>
+    </div>
+
+    <script src="events.js"></script>
+
+    <script>
+        // --- 게임 설정 ---
+        const MAX_FATIGUE = 100;
+        const TOTAL_DAYS = 540;
+
+        // --- 게임 상태 변수 ---
+        let character = {
+            name: '',
+            age: 0,
+            height: 0,
+            weight: 0,
+            isSmoker: false,
+            hasGirlfriend: false,
+            stamina: 100 // 초기 체력
+        };
+        let currentDay = 1;
+        let fatigue = 0;
+        let currentEventId = null;
+
+        // --- DOM 요소 ---
+        // (DOM 요소 변수 선언은 이전과 동일)
+        const charNameEl = document.getElementById('char-name');
+        const charAgeEl = document.getElementById('char-age');
+        const charHeightEl = document.getElementById('char-height');
+        const charWeightEl = document.getElementById('char-weight');
+        const charSmokerEl = document.getElementById('char-smoker');
+        const charGirlfriendEl = document.getElementById('char-girlfriend');
+        const charStaminaEl = document.getElementById('char-stamina');
+        const currentDayEl = document.getElementById('current-day');
+        const fatigueValueEl = document.getElementById('fatigue-value');
+        const fatigueBarFillEl = document.getElementById('fatigue-bar-fill');
+        const fatigueTextEl = document.getElementById('fatigue-text');
+        const eventTextEl = document.getElementById('event-text');
+        const choicesEl = document.getElementById('choices');
+        const messageAreaEl = document.getElementById('message-area');
+        const gameOverEl = document.getElementById('game-over');
+        const gameOverReasonEl = document.getElementById('game-over-reason');
+
+        // --- 유틸리티 함수 ---
+        // (getRandomInt, getRandomName 함수는 이전과 동일)
+        function getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function getRandomName() {
+            const lastNames = ['김', '이', '박', '최', '정', '강', '조', '윤', '장', '임'];
+            const firstNames = ['민준', '서준', '도윤', '예준', '시우', '하준', '지호', '주원', '지훈', '준서'];
+            return lastNames[getRandomInt(0, lastNames.length - 1)] + firstNames[getRandomInt(0, firstNames.length - 1)];
+        }
+
+
+        // --- 게임 초기화 ---
+        function initializeGame() {
+            // 캐릭터 생성 (이전과 동일)
+            character.name = getRandomName();
+            character.age = getRandomInt(19, 21);
+            character.height = getRandomInt(165, 190);
+            const heightM = character.height / 100;
+            const minWeight = Math.round(18.5 * heightM * heightM);
+            const maxWeight = Math.round(25 * heightM * heightM);
+            character.weight = getRandomInt(minWeight - 5, maxWeight + 5);
+            character.isSmoker = Math.random() < 0.5;
+            character.hasGirlfriend = Math.random() < 0.4;
+            const bmi = character.weight / (heightM * heightM);
+            character.stamina = 100;
+            if (bmi < 18.5 || bmi > 25) {
+                character.stamina -= getRandomInt(5, 15);
+            } else {
+                character.stamina += getRandomInt(0, 10);
+            }
+            character.stamina = Math.max(80, Math.min(120, character.stamina));
+
+            fatigue = getRandomInt(5, 15);
+            currentDay = 1;
+            currentEventId = null;
+
+            updateCharacterInfoUI();
+            updateStatusUI();
+            displayMessage("게임 시작! 캐릭터 정보가 생성되었습니다.");
+
+            // 첫날 이벤트 로드
+            const firstEvent = findEventById('start_day_1');
+             if (firstEvent) {
+                 displayEvent(firstEvent);
+             } else {
+                 console.error("Cannot find start_day_1 event! Check if events.js is loaded correctly.");
+                 // events.js 로드 실패 시 대체 메시지 표시
+                 eventTextEl.textContent = "오류: 이벤트 데이터를 로드할 수 없습니다. events.js 파일이 올바른 위치에 있는지 확인하세요.";
+             }
+        }
+
+        // --- UI 업데이트 함수 ---
+        // (updateCharacterInfoUI, updateStatusUI, displayMessage, displayEvent 함수는 이전과 거의 동일)
+        // displayEvent는 events 배열을 직접 참조하지 않으므로 수정 불필요
+        function updateCharacterInfoUI() {
+            charNameEl.textContent = character.name;
+            charAgeEl.textContent = character.age;
+            charHeightEl.textContent = character.height;
+            charWeightEl.textContent = character.weight;
+            charSmokerEl.textContent = character.isSmoker ? '예' : '아니오';
+            charGirlfriendEl.textContent = character.hasGirlfriend ? '있음' : '없음';
+            charStaminaEl.textContent = character.stamina;
+        }
+
+        function updateStatusUI() {
+            currentDayEl.textContent = currentDay;
+            fatigue = Math.max(0, Math.min(MAX_FATIGUE, fatigue));
+            fatigueValueEl.textContent = fatigue;
+            const fatiguePercent = (fatigue / MAX_FATIGUE) * 100;
+            fatigueBarFillEl.style.width = `${fatiguePercent}%`;
+            fatigueTextEl.textContent = `${Math.round(fatiguePercent)}%`;
+
+            if (fatigue > 80) {
+                fatigueBarFillEl.style.backgroundColor = '#dc2626'; // red-600
+            } else if (fatigue > 50) {
+                fatigueBarFillEl.style.backgroundColor = '#f97316'; // orange-500
+            } else {
+                fatigueBarFillEl.style.backgroundColor = '#ef4444'; // red-500
+            }
+        }
+
+        function displayMessage(msg) {
+            messageAreaEl.textContent = msg;
+        }
+
+        function displayEvent(event) {
+            if (!event) {
+                console.error("displayEvent called with null or undefined event.");
+                eventTextEl.textContent = "오류: 유효하지 않은 이벤트입니다.";
+                choicesEl.innerHTML = ''; // 선택지 초기화
+                return;
+            }
+             // 이벤트 액션 처리
+            if (event.action) {
+                 // action이 함수 이름 문자열일 경우 전역 스코프에서 찾아 실행
+                 if (typeof event.action === 'string' && typeof window[event.action] === 'function') {
+                     window[event.action]();
+                 } else if (typeof event.action === 'function') { // 함수 자체일 경우 직접 실행 (events.js에서는 함수 직접 할당 어려움)
+                     event.action();
+                 } else {
+                      console.error(`Action '${event.action}' is not a function or not found.`);
+                 }
+                 return;
+            }
+
+            currentEventId = event.id;
+            eventTextEl.innerHTML = `<p class="font-medium mb-2 text-green-400">D+${currentDay} - ${event.title || '일상'}</p><p>${event.description}</p>`;
+            choicesEl.innerHTML = '';
+
+            // 선택지 표시
+            if (event.choices && event.choices.length > 0) {
+                event.choices.forEach(choice => {
+                    if (choice.condition && !choice.condition()) {
+                        return;
+                    }
+                    const button = document.createElement('button');
+                    button.textContent = choice.text;
+                    button.classList.add('choice-button', 'w-full', 'px-4', 'py-2', 'rounded-md', 'font-medium', 'focus:outline-none', 'focus:ring-2', 'focus:ring-green-500', 'focus:ring-offset-2', 'focus:ring-offset-gray-900', 'disabled:opacity-50', 'disabled:cursor-not-allowed');
+                    button.onclick = () => handleChoice(choice);
+                    choicesEl.appendChild(button);
+                });
+            } else if (event.id === 'end_day') {
+                 const sleepButton = document.createElement('button');
+                 sleepButton.textContent = "잠자리에 든다";
+                 sleepButton.classList.add('next-day-button', 'w-full', 'px-4', 'py-2', 'rounded-md', 'font-medium');
+                 sleepButton.onclick = () => handleChoice({ outcomeDescription: "내일을 위해 잠을 청한다.", nextEventId: 'finalize_day' });
+                 choicesEl.appendChild(sleepButton);
+            } else {
+                 console.warn(`Event '${event.id}' has no choices defined. Proceeding to endDaySequence.`);
+                 endDaySequence();
+            }
+        }
+
+
+        // --- 게임 로직 함수 ---
+        // (handleChoice, startDay, endDaySequence, finalizeDay, checkGameOver, triggerGameOver 함수는 이전과 동일)
+        // 이 함수들은 전역 변수 events를 사용하므로 수정 불필요
+        function handleChoice(choice) {
+            let message = choice.outcomeDescription || "특별한 일은 없었다.";
+            let fatigueChange = choice.fatigueChange || 0;
+            let staminaChange = choice.staminaChange || 0;
+
+            fatigue += fatigueChange;
+            character.stamina += staminaChange;
+            character.stamina = Math.max(50, character.stamina);
+
+            let changeMessage = [];
+            if (fatigueChange > 0) changeMessage.push(`피로도 ${fatigueChange} 증가`);
+            if (fatigueChange < 0) changeMessage.push(`피로도 ${-fatigueChange} 감소`);
+            if (staminaChange > 0) changeMessage.push(`체력 ${staminaChange} 증가`);
+            if (staminaChange < 0) changeMessage.push(`체력 ${-staminaChange} 감소`);
+
+            if (changeMessage.length > 0) {
+                message += ` (${changeMessage.join(', ')})`;
+            }
+
+            displayMessage(message);
+            updateStatusUI();
+            updateCharacterInfoUI();
+
+            if (checkGameOver()) return;
+
+            if (choice.nextEventId) {
+                const nextEvent = findEventById(choice.nextEventId);
+                if (nextEvent) {
+                    displayEvent(nextEvent);
+                } else {
+                    if (choice.nextEventId === 'personal_time') {
+                        endDaySequence();
+                    } else {
+                        console.error(`Event not found: ${choice.nextEventId}`);
+                        endDaySequence();
+                    }
+                }
+            } else {
+                if (currentEventId === 'personal_time') {
+                    const endDayEvent = findEventById('end_day');
+                    if(endDayEvent) displayEvent(endDayEvent);
+                    else console.error("Cannot find end_day event!");
+                } else {
+                    endDaySequence();
+                }
+            }
+        }
+
+        function startDay() {
+            const recovery = getRandomInt(10, 20);
+            fatigue -= recovery;
+            displayMessage(`밤새 잠을 자고 일어나 피로도가 ${recovery} 감소했습니다.`);
+            updateStatusUI();
+
+            const todayEvent = getRandomDailyEvent();
+             if (todayEvent) {
+                displayEvent(todayEvent);
+             } else {
+                 console.error("Could not get random daily event. Check events definition and getRandomDailyEvent function.");
+                 eventTextEl.textContent = "오류: 오늘의 이벤트를 가져올 수 없습니다.";
+             }
+        }
+
+        function endDaySequence() {
+            // personal_time 이벤트 정의 (이전과 동일)
+            const personalTimeEvent = {
+                id: "personal_time",
+                title: "개인 정비 시간",
+                description: "힘든 하루 일과가 끝나고 개인 정비 시간이 주어졌다. 무엇을 할까?",
+                choices: [
+                    { text: "PX에 가서 간식 사먹기", fatigueChange: -5, staminaChange: 1, outcomeDescription: "PX에서 맛있는 간식을 사먹었다. 기분이 조금 나아졌다." },
+                    { text: "동기들과 잡담하기", fatigueChange: -3, outcomeDescription: "동기들과 이런저런 이야기를 나누며 시간을 보냈다." },
+                    { text: "체력 단련하기", fatigueChange: 5, staminaChange: 3, outcomeDescription: "미래를 위해 체력을 단련했다. 조금 힘들지만 뿌듯하다." },
+                    { text: "조용히 휴식하기 (잠자기)", fatigueChange: -10, outcomeDescription: "생활관 구석에서 조용히 눈을 붙였다. 피로가 조금 풀린다." },
+                    { text: "담배 한 대 피우기", fatigueChange: -7, staminaChange: -1, condition: () => character.isSmoker, outcomeDescription: "흡연 구역에서 담배를 피우며 잠시 생각에 잠겼다. 건강엔 안 좋겠지만..." },
+                    { text: "여자친구에게 전화하기", fatigueChange: -15, condition: () => character.hasGirlfriend, outcomeDescription: "공중전화 박스에서 여자친구와 통화했다. 목소리를 들으니 힘이 난다!" }
+                ].filter(choice => !choice.condition || choice.condition())
+                   .map(choice => ({ ...choice, nextEventId: 'end_day' }))
+            };
+            displayEvent(personalTimeEvent);
+        }
+
+        // finalizeDay 함수는 여기서 정의되어야 events.js에서 참조 가능
+        function finalizeDay() {
+            if (checkGameOver()) return;
+
+            currentDay++;
+            if (currentDay > TOTAL_DAYS) {
+                triggerGameOver("축하합니다! 540일의 군 복무를 무사히 마치고 전역했습니다!", true);
+            } else {
+                startDay(); // 다음 날 시작
+            }
+        }
+
+
+        function checkGameOver() {
+            if (fatigue >= MAX_FATIGUE) {
+                triggerGameOver("극도의 피로 누적으로 쓰러졌습니다. 의병 제대 처리됩니다.");
+                return true;
+            }
+            if (character.stamina < 50 && getRandomInt(1, 10) === 1) {
+                 fatigue += getRandomInt(10, 20);
+                 displayMessage("경고: 체력이 너무 낮아 작업 중 부상을 입었습니다! (피로도 증가)");
+                 updateStatusUI();
+                 if (fatigue >= MAX_FATIGUE) {
+                     triggerGameOver("낮은 체력으로 인한 부상 후유증으로 쓰러졌습니다.");
+                     return true;
+                 }
+            }
+            return false;
+        }
+
+        function triggerGameOver(reason, isClear = false) {
+            eventTextEl.classList.add('hidden');
+            choicesEl.innerHTML = '';
+            messageAreaEl.classList.add('hidden');
+
+            gameOverReasonEl.textContent = reason;
+            gameOverEl.classList.remove('hidden');
+
+            if (isClear) {
+                 gameOverEl.classList.replace('bg-red-900', 'bg-green-900');
+                 gameOverEl.classList.replace('border-red-700', 'border-green-700');
+                 gameOverEl.querySelector('p:first-child').classList.replace('text-red-300', 'text-green-300');
+                 gameOverReasonEl.classList.replace('text-red-400', 'text-green-400');
+                 gameOverEl.querySelector('button').classList.replace('game-over-button', 'bg-green-600');
+                 gameOverEl.querySelector('button').classList.add('hover:bg-green-700');
+            }
+        }
+
+
+        // --- 이벤트 데이터 관련 함수 (이제 events 변수는 events.js에서 로드됨) ---
+
+        // 이벤트 ID로 이벤트 객체 찾기
+        function findEventById(id) {
+             // events 배열이 로드되었는지 확인
+             if (typeof events === 'undefined') {
+                 console.error("events array is not loaded. Make sure events.js is included correctly.");
+                 return null; // 또는 적절한 오류 처리
+             }
+            return events.find(event => event.id === id);
+        }
+
+        // 랜덤 일일 활동 이벤트 선택 함수
+        function getRandomDailyEvent() {
+             // events 배열 로드 확인
+             if (typeof events === 'undefined') {
+                 console.error("events array is not loaded.");
+                 return null;
+             }
+            const dailyEventPool = events.filter(event => event.type === 'daily');
+            if (dailyEventPool.length === 0) {
+                console.error("No daily events found in the loaded events array!");
+                // 비상용 이벤트 반환 시도
+                return findEventById('basic_training') || (events.length > 0 ? events[0] : null);
+            }
+            const randomIndex = getRandomInt(0, dailyEventPool.length - 1);
+            return dailyEventPool[randomIndex];
+        }
+
+        // --- 게임 시작 ---
+        // events.js가 로드된 후 게임 초기화 실행
+        window.onload = initializeGame;
+
+    </script>
+</body>
+</html>
