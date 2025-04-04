@@ -905,6 +905,433 @@
     },
 
 // ... (Part 5 끝, Part 6에서 계속) ...
+        // events.js - Part 6 of 7: 특별 이벤트, 관계, 자기계발, 성장
+// 전체 게임을 위해서는 모든 파트를 하나의 events.js 파일로 합쳐야 합니다.
+
+// ... (Part 5에서 이어짐, events 배열 내부에 추가) ...
+
+    // ====================================
+    // 군 생활 특별 이벤트 (임시 구조 예시)
+    // ====================================
+     {
+        id: 'unit_sports_day', type: 'special',
+        title: "부대 체육대회 참가",
+        description: "모처럼 부대 전체가 참여하는 체육대회가 열렸다. 축구, 족구 등 다양한 경기가 진행된다.",
+        choices: [ // 임시 선택지
+            { text: "축구 경기에 참여한다", fatigueChange: 15, staminaChange: 2, outcomeDescription: "오랜만에 공을 차니 힘들지만 재미있다.", nextEventId: 'personal_time' },
+            { text: "족구 경기에 참여한다", fatigueChange: 10, staminaChange: 1, outcomeDescription: "동료들과 호흡을 맞춰 족구를 즐겼다.", nextEventId: 'personal_time' },
+            { text: "응원하며 구경한다", fatigueChange: -5, outcomeDescription: "경기에 참여하진 않았지만, 응원하며 즐거운 시간을 보냈다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'preparing_for_equipment_inspection', type: 'special',
+        title: "군장 검사 전날 밤샘 준비",
+        description: "내일 있을 군장 검사를 앞두고 밤늦게까지 장비들을 정비하고 준비한다.",
+        choices: [ // 임시 선택지
+            { text: "꼼꼼하게 모든 장비를 점검한다", fatigueChange: 12, outcomeDescription: "밤늦게까지 장비를 닦고 정비했다. 내일 지적받지 않기를.", nextEventId: 'personal_time' },
+            { text: "필수적인 것만 점검하고 잔다", fatigueChange: 8, outcomeDescription: "너무 피곤해서 중요한 것들만 확인하고 잠자리에 들었다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'commander_visit_unit_tension', type: 'special',
+        title: "지휘관 순시와 부대 긴장감",
+        description: "높은 지휘관이 부대를 순시한다는 소식에 부대 전체가 긴장 상태다.",
+        choices: [ // 임시 선택지
+            { text: "맡은 바 임무에 최선을 다한다", fatigueChange: 8, outcomeDescription: "지휘관의 눈에 띄지 않도록, 혹은 잘 보이도록 평소보다 열심히 했다.", nextEventId: 'personal_time' },
+            { text: "실수할까 봐 불안하다", fatigueChange: 10, outcomeDescription: "괜히 실수해서 혼날까 봐 불안한 마음으로 시간을 보냈다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'promotion_review_interview_prep', type: 'milestone',
+        title: "진급 심사와 면접 준비",
+        description: "다음 계급으로의 진급 심사 대상이 되어 면접을 준비해야 한다.",
+        choices: [ // 임시 선택지
+            { text: "예상 질문을 준비하고 연습한다", fatigueChange: 5, outcomeDescription: "진급을 위해 면접 준비를 철저히 했다.", nextEventId: 'personal_time' },
+            { text: "될 대로 되라는 식으로 임한다", fatigueChange: 2, outcomeDescription: "특별히 준비하지 않고 평소대로 면접에 임하기로 했다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'earning_reward_leave_planning', type: 'leave',
+        title: "포상 휴가 획득과 일정 계획",
+        description: "훈련이나 모범적인 생활로 포상 휴가를 받게 되었다! 어떻게 사용할지 계획을 세운다.",
+        choices: [ // 임시 선택지
+            { text: "가족/친구와 보낼 계획을 세운다", fatigueChange: -15, outcomeDescription: "오랜만에 만날 사람들을 생각하니 벌써 설렌다.", nextEventId: 'personal_time' },
+            { text: "혼자만의 휴식을 계획한다", fatigueChange: -10, outcomeDescription: "이번 휴가는 조용히 혼자 쉬면서 재충전하기로 했다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'participating_armed_forces_day_event', type: 'special',
+        title: "국군의 날 행사 참여",
+        description: "국군의 날을 맞아 부대 또는 외부에서 열리는 기념행사에 참여한다.",
+        choices: [ // 임시 선택지
+            { text: "자부심을 느끼며 행사에 참여한다", fatigueChange: 3, outcomeDescription: "군인으로서 자부심을 느끼는 시간이었다.", nextEventId: 'personal_time' },
+            { text: "힘들지만 의무감으로 참여한다", fatigueChange: 8, outcomeDescription: "행사 준비와 참여 과정이 힘들었지만, 무사히 마쳤다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'special_meal_holiday_atmosphere', type: 'special',
+        title: "기념일 특식과 부대 분위기",
+        description: "명절이나 기념일을 맞아 평소보다 훨씬 좋은 특식이 나왔다. 부대 분위기도 들떠있다.",
+        choices: [ // 임시 선택지
+            { text: "맛있게 특식을 즐긴다", fatigueChange: -8, outcomeDescription: "오랜만에 맛있는 음식을 먹으니 기분이 좋다.", nextEventId: 'personal_time' },
+            { text: "집 생각이 더 간절해진다", fatigueChange: 2, outcomeDescription: "맛있는 음식을 먹으니 가족 생각이 더 난다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'exchange_event_with_other_unit', type: 'special',
+        title: "다른 부대와의 교류 행사",
+        description: "체육 활동이나 합동 작업 등으로 다른 부대와 교류할 기회가 생겼다.",
+        choices: [ // 임시 선택지
+            { text: "새로운 사람들과 어울린다", fatigueChange: 1, outcomeDescription: "다른 부대 사람들과 이야기하며 정보를 교환했다.", nextEventId: 'personal_time' },
+            { text: "우리 부대원들과만 시간을 보낸다", fatigueChange: 0, outcomeDescription: "낯선 사람들과 어울리는 것이 어색해서 원래 알던 사람들과 있었다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'supporting_base_open_house_event', type: 'special',
+        title: "민간인 대상 군부대 개방행사 지원",
+        description: "부대 개방 행사에 지원 인력으로 참여하여 민간인들을 안내하거나 시범을 보인다.",
+        choices: [ // 임시 선택지
+            { text: "친절하게 민간인들을 대한다", fatigueChange: 6, outcomeDescription: "방문객들에게 친절하게 설명하고 안내했다.", nextEventId: 'personal_time' },
+            { text: "귀찮지만 맡은 역할을 수행한다", fatigueChange: 8, outcomeDescription: "많은 사람들을 상대하는 것이 피곤했지만, 임무를 완수했다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'visiting_military_museum', type: 'special',
+        title: "군사 박물관 견학 기회",
+        description: "부대에서 단체로 군사 박물관을 견학할 기회가 주어졌다.",
+        choices: [ // 임시 선택지
+            { text: "흥미롭게 관람한다", fatigueChange: -3, outcomeDescription: "우리 군의 역사와 유물들을 보며 많은 것을 느꼈다.", nextEventId: 'personal_time' },
+            { text: "지루함을 느낀다", fatigueChange: 2, outcomeDescription: "역사나 유물에는 별로 관심이 없어 지루했다.", nextEventId: 'personal_time' }
+        ]
+    },
+    // ... (군 생활 특별 이벤트 추가) ...
+
+    // ====================================
+    // 인간관계 및 갈등 (임시 구조 예시)
+    // ====================================
+    {
+        id: 'peer_friendship_teamwork', type: 'relationship',
+        title: "동기 간 우정과 팀워크 형성",
+        description: "힘든 훈련과 생활을 함께하며 동기들과의 우정이 깊어지고 있다.",
+        choices: [ // 임시 선택지
+            { text: "동기들을 돕고 의지한다", fatigueChange: -3, outcomeDescription: "서로 돕고 의지하며 힘든 시기를 함께 이겨내고 있다.", nextEventId: 'personal_time' },
+            { text: "가끔 경쟁심을 느낀다", fatigueChange: 2, outcomeDescription: "친하면서도 가끔은 동기보다 더 잘하고 싶은 마음이 든다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'resolving_conflict_with_senior', type: 'relationship',
+        title: "선임과의 갈등 해결하기",
+        description: "업무나 생활 방식 차이로 선임과 갈등이 생겼다.",
+        choices: [ // 임시 선택지
+            { text: "대화를 통해 오해를 푼다", fatigueChange: 3, outcomeDescription: "용기를 내어 선임과 대화했고, 서로의 입장을 이해하게 되었다.", nextEventId: 'personal_time' },
+            { text: "갈등을 회피한다", fatigueChange: 5, outcomeDescription: "괜히 말을 꺼냈다가 더 안 좋아질까 봐 갈등을 피했다.", nextEventId: 'personal_time' },
+            { text: "다른 선임이나 간부에게 중재를 요청한다", fatigueChange: 4, outcomeDescription: "다른 사람의 도움을 받아 갈등을 해결하려 시도했다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'difficulty_training_junior', type: 'relationship',
+        title: "후임 교육의 어려움",
+        description: "새로 들어온 후임을 가르치고 지도하는 것이 생각보다 어렵다.",
+        choices: [ // 임시 선택지
+            { text: "인내심을 갖고 차근차근 가르친다", fatigueChange: 5, outcomeDescription: "답답하지만 참고 후임이 잘 적응하도록 도와주었다.", nextEventId: 'personal_time' },
+            { text: "화를 내거나 포기한다", fatigueChange: 8, outcomeDescription: "자꾸 실수를 반복하는 후임에게 결국 화를 내고 말았다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'communication_issues_officer_soldier', type: 'relationship',
+        title: "간부와 병사 간 소통 문제",
+        description: "간부와 병사 간의 입장 차이로 인해 소통에 어려움을 겪는다.",
+        choices: [ // 임시 선택지
+            { text: "간부의 입장을 이해하려 노력한다", fatigueChange: 3, outcomeDescription: "간부의 지시나 생각을 이해하려고 노력했다.", nextEventId: 'personal_time' },
+            { text: "불만을 속으로 삭인다", fatigueChange: 5, outcomeDescription: "말해도 소용없을 것 같아 불만을 속으로 삭였다.", nextEventId: 'personal_time' }
+        ]
+    },
+    // ... (인간관계 및 갈등 이벤트 추가) ...
+
+    // ====================================
+    // 자기계발 및 취미 (임시 구조 예시)
+    // ====================================
+     {
+        id: 'certificate_preparation', type: 'daily',
+        title: "군 복무 중 자격증 취득 준비",
+        description: "개인정비 시간이나 주말을 활용해 자격증 공부를 시작했다.",
+        choices: [ // 임시 선택지
+            { text: "꾸준히 공부하여 시험에 응시한다", fatigueChange: 3, outcomeDescription: "열심히 공부한 결과 자격증 시험에 합격했다!", nextEventId: 'personal_time' }, // 능력치/상태 변화 필요
+            { text: "피곤해서 자주 미룬다", fatigueChange: -2, outcomeDescription: "공부보다는 쉬고 싶은 마음이 더 커서 진도가 잘 나가지 않는다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'learning_foreign_language', type: 'daily',
+        title: "외국어 학습으로 시간 활용",
+        description: "짬짬이 시간을 내어 외국어(영어, 일본어 등) 공부를 한다.",
+        choices: [ // 임시 선택지
+            { text: "매일 꾸준히 단어를 외우고 공부한다", fatigueChange: 2, outcomeDescription: "조금씩이지만 실력이 느는 것 같다.", nextEventId: 'personal_time' }, // 능력치 변화 필요
+            { text: "작심삼일로 끝난다", fatigueChange: 1, outcomeDescription: "처음에는 열심히 했지만 금방 흥미를 잃었다.", nextEventId: 'personal_time' }
+        ]
+    },
+    // ... (자기계발 및 취미 이벤트 추가) ...
+
+    // ====================================
+    // 군 생활 속 성장 (임시 구조 예시)
+    // ====================================
+    {
+        id: 'leadership_skill_development', type: 'milestone',
+        title: "리더십 기술 함양과 적용",
+        description: "분대장이나 조장 역할을 맡으며 자연스럽게 리더십을 배우고 적용하게 된다.",
+        choices: [ // 임시 선택지
+            { text: "책임감을 갖고 팀을 이끈다", fatigueChange: 5, outcomeDescription: "팀원들을 독려하고 이끌면서 리더십이 향상되는 것을 느낀다.", nextEventId: 'personal_time' }, // 능력치 변화 필요
+            { text: "리더 역할에 부담을 느낀다", fatigueChange: 8, outcomeDescription: "팀을 이끄는 것이 어렵고 부담스럽게 느껴진다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'improved_judgment_crisis_situation', type: 'milestone',
+        title: "위기 상황에서의 판단력 향상",
+        description: "여러 위기 상황을 겪으며 침착하게 상황을 판단하는 능력이 향상되었다.",
+        choices: [ // 임시 선택지
+            { text: "과거 경험을 바탕으로 침착하게 대응한다", fatigueChange: 2, outcomeDescription: "예전 같으면 당황했을 상황도 이제는 침착하게 대처할 수 있다.", nextEventId: 'personal_time' }, // 능력치 변화 필요
+            { text: "여전히 위기 상황은 어렵다", fatigueChange: 5, outcomeDescription: "많이 나아졌지만, 여전히 위기 상황은 긴장되고 어렵다.", nextEventId: 'personal_time' }
+        ]
+    },
+    // ... (군 생활 속 성장 이벤트 추가) ...
+
+// ... (Part 6 끝, Part 7에서 계속) ...
+        // events.js - Part 7 of 7: 휴가, 외부 활동, 전역 준비
+// 전체 게임을 위해서는 모든 파트를 하나의 events.js 파일로 합쳐야 합니다.
+
+// ... (Part 6에서 이어짐, events 배열 내부에 추가) ...
+
+    // ====================================
+    // 휴가 및 외부 활동 (임시 구조 예시)
+    // ====================================
+    {
+        id: 'first_leave_plan_execution', type: 'leave',
+        title: "첫 휴가 계획과 실행",
+        description: "드디어 기다리고 기다리던 첫 휴가다! 무엇을 할지 계획을 세우고 실행에 옮긴다.",
+        choices: [ // 임시 선택지
+            { text: "집에서 푹 쉬며 가족과 시간을 보낸다", fatigueChange: -25, outcomeDescription: "오랜만에 집밥을 먹고 가족들과 시간을 보내니 피로가 풀린다.", nextEventId: 'personal_time' }, // 휴가 복귀 이벤트 필요
+            { text: "친구들을 만나 회포를 푼다", fatigueChange: -15, outcomeDescription: "친구들과 만나 밤새 군대 이야기를 하며 즐거운 시간을 보냈다.", nextEventId: 'personal_time' } // 휴가 복귀 이벤트 필요
+        ]
+    },
+    {
+        id: 'hometown_visit_family_reunion', type: 'leave',
+        title: "고향 방문과 가족 재회",
+        description: "휴가를 나와 오랜만에 고향 집에 도착했다. 가족들이 반갑게 맞아준다.",
+        choices: [ // 임시 선택지
+            { text: "가족들과 밀린 이야기를 나눈다", fatigueChange: -10, outcomeDescription: "그동안 못했던 이야기를 나누며 가족의 소중함을 느낀다.", nextEventId: 'personal_time' },
+            { text: "어색함을 느낀다", fatigueChange: 0, outcomeDescription: "오랜만에 보니 가족들과도 약간의 어색함이 느껴진다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'meeting_friends_during_leave', type: 'leave',
+        title: "휴가 중 친구들과의 만남",
+        description: "휴가를 맞아 친구들을 만났다. 다들 그대로인 것 같기도, 변한 것 같기도 하다.",
+        choices: [ // 임시 선택지
+            { text: "군대 이야기를 실컷 한다", fatigueChange: -8, outcomeDescription: "친구들에게 군대 '썰'을 풀며 즐거워했다.", nextEventId: 'personal_time' },
+            { text: "친구들의 이야기에 소외감을 느낀다", fatigueChange: 5, outcomeDescription: "나만 다른 세계에 있는 듯한 느낌에 조금 소외감을 느꼈다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'crisis_late_return_from_leave', type: 'leave',
+        title: "휴가 복귀 지각 위기",
+        description: "늦잠을 자거나 차를 놓쳐 휴가 복귀 시간에 늦을 위기에 처했다!",
+        choices: [ // 임시 선택지
+            { text: "택시를 타고 서둘러 복귀한다", fatigueChange: 15, outcomeDescription: "비싼 택시비를 내고 아슬아슬하게 복귀 시간에 맞춰 도착했다.", nextEventId: 'personal_time' },
+            { text: "부대에 전화해서 상황을 알린다", fatigueChange: 10, outcomeDescription: "미리 부대에 연락하여 양해를 구하고 조금 늦게 복귀했다.", nextEventId: 'personal_time' }
+        ]
+    },
+    // ... (휴가 및 외부 활동 이벤트 추가) ...
+
+    // ====================================
+    // 전역 준비 단계 (임시 구조 예시)
+    // ====================================
+    {
+        id: 'discharge_100_days_countdown', type: 'milestone',
+        title: "전역 100일 카운트다운 시작",
+        description: "드디어 전역일이 100일 앞으로 다가왔다. '말년'이 되었다는 실감이 난다.",
+        choices: [ // 임시 선택지
+            { text: "전역일 계산만 하며 시간을 보낸다", fatigueChange: -5, outcomeDescription: "달력에 X표를 치며 전역일만 기다린다.", nextEventId: 'personal_time' },
+            { text: "남은 군 생활을 의미있게 보내려 한다", fatigueChange: 0, outcomeDescription: "얼마 남지 않은 군 생활, 유종의 미를 거두기로 다짐한다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'handover_duties_to_junior', type: 'milestone',
+        title: "후임에게 업무 인수인계",
+        description: "전역이 다가오면서 맡았던 업무를 후임에게 인수인계하기 시작했다.",
+        choices: [ // 임시 선택지
+            { text: "꼼꼼하게 모든 노하우를 전수한다", fatigueChange: 3, outcomeDescription: "후임이 잘 적응할 수 있도록 내가 아는 모든 것을 알려주었다.", nextEventId: 'personal_time' },
+            { text: "필요한 것만 간단히 알려준다", fatigueChange: 1, outcomeDescription: "핵심적인 내용 위주로 인수인계를 마쳤다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'preparing_discharge_report_paperwork', type: 'milestone',
+        title: "전역 신고 준비와 서류 작성",
+        description: "전역을 위해 필요한 서류들을 준비하고 작성한다.",
+        choices: [ // 임시 선택지
+            { text: "누락된 서류 없이 꼼꼼히 챙긴다", fatigueChange: 2, outcomeDescription: "전역 절차에 필요한 서류들을 빠짐없이 준비했다.", nextEventId: 'personal_time' },
+            { text: "귀찮아서 미루다 급하게 처리한다", fatigueChange: 4, outcomeDescription: "미루다가 마지막에 급하게 서류를 준비했다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'participating_last_training_before_discharge', type: 'milestone',
+        title: "전역 전 마지막 훈련 참가",
+        description: "전역을 앞두고 마지막으로 훈련에 참가하게 되었다.",
+        choices: [ // 임시 선택지
+            { text: "유종의 미를 거두기 위해 열심히 참여한다", fatigueChange: 10, outcomeDescription: "마지막 훈련이라고 생각하니 감회가 새롭다. 최선을 다했다.", nextEventId: 'personal_time' },
+            { text: "몸을 사리며 안전하게 참여한다", fatigueChange: 5, outcomeDescription: "전역 직전에 다치면 안 되니 최대한 안전하게 훈련을 마쳤다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'planning_discharge_leave', type: 'leave',
+        title: "전역 휴가 계획 세우기",
+        description: "마지막 휴가, 즉 전역 휴가 계획을 세운다. 사회로 나갈 준비를 한다.",
+        choices: [ // 임시 선택지
+            { text: "여행 계획을 세운다", fatigueChange: -10, outcomeDescription: "그동안 못 갔던 여행을 가기로 했다.", nextEventId: 'personal_time' },
+            { text: "취업/복학 준비를 한다", fatigueChange: 5, outcomeDescription: "휴가 기간 동안 사회에 나가 할 일을 미리 준비하기로 했다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'preparing_for_civilian_job_return_to_school', type: 'milestone',
+        title: "민간 취업/복학 준비 및 고민",
+        description: "전역 후 무엇을 할지 구체적으로 고민하고 준비하기 시작한다.",
+        choices: [ // 임시 선택지
+            { text: "관련 정보를 찾아보고 계획을 세운다", fatigueChange: 3, outcomeDescription: "인터넷이나 책을 통해 정보를 얻으며 미래를 계획한다.", nextEventId: 'personal_time' },
+            { text: "막막함을 느낀다", fatigueChange: 6, outcomeDescription: "무엇부터 해야 할지 막막하고 불안한 마음이 든다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'discharge_celebration_party_peers', type: 'relationship',
+        title: "전역 기념 파티와 동료들의 축하",
+        description: "동기 및 선후임들이 나의 전역을 축하해주기 위해 작은 파티를 열어주었다.",
+        choices: [ // 임시 선택지
+            { text: "진심으로 고마움을 표현한다", fatigueChange: -15, outcomeDescription: "함께 했던 동료들의 축하에 감동받았다.", nextEventId: 'personal_time' },
+            { text: "쑥스러워한다", fatigueChange: -10, outcomeDescription: "이런 자리가 익숙하지 않아 쑥스러웠지만 기분은 좋다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'final_barracks_cleanup_returning_items', type: 'milestone',
+        title: "마지막 내무반 정리 및 물품 반납",
+        description: "정들었던 내무반을 정리하고 지급받았던 물품들을 반납한다.",
+        choices: [ // 임시 선택지
+            { text: "깨끗하게 정리하고 물품을 반납한다", fatigueChange: 5, outcomeDescription: "마지막까지 깔끔하게 정리하고 물품을 반납했다.", nextEventId: 'personal_time' },
+            { text: "후임에게 정리를 부탁한다", fatigueChange: 2, outcomeDescription: "말년이니 이 정도는 괜찮겠지. 후임에게 정리를 부탁했다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'discharge_interview_with_commander', type: 'milestone',
+        title: "부대장과의 전역 면담",
+        description: "전역 신고를 위해 부대장(지휘관)과 마지막 면담을 한다.",
+        choices: [ // 임시 선택지
+            { text: "감사의 인사를 전한다", fatigueChange: 1, outcomeDescription: "그동안의 지도에 대해 감사의 인사를 드렸다.", nextEventId: 'personal_time' },
+            { text: "건의사항을 이야기한다", fatigueChange: 0, outcomeDescription: "마지막으로 부대 발전을 위한 건의사항을 조심스럽게 이야기했다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'receiving_discharge_certificate_leaving_unit', type: 'milestone',
+        title: "전역증 수여식과 민간인 복장으로 부대 떠나기",
+        description: "간단한 전역증 수여식을 마치고, 가져온 민간인 옷으로 갈아입고 부대를 나설 준비를 한다.",
+        choices: [ // 임시 선택지
+            { text: "전역증을 받고 감격한다", fatigueChange: -20, outcomeDescription: "드디어 전역증을 받았다! 꿈만 같다.", nextEventId: 'discharge_day_leaving_gate' },
+            { text: "민간인 옷이 어색하다", fatigueChange: -15, outcomeDescription: "오랜만에 입는 사복이 어색하게 느껴진다.", nextEventId: 'discharge_day_leaving_gate' }
+        ]
+    },
+    {
+        id: 'first_day_civilian_life_adaptation', type: 'milestone',
+        title: "전역 후 첫날 민간인 생활 적응",
+        description: "전역 후 맞이한 첫날. 모든 것이 낯설고 새롭다.",
+        choices: [ // 임시 선택지
+            { text: "늦잠을 실컷 잔다", fatigueChange: -30, outcomeDescription: "기상나팔 소리 없는 아침! 꿀잠을 잤다.", nextEventId: 'personal_time' }, // 게임 엔딩 관련 처리 필요
+            { text: "하고 싶었던 것을 한다", fatigueChange: -20, outcomeDescription: "그동안 못했던 것들을 하며 자유를 만끽한다.", nextEventId: 'personal_time' } // 게임 엔딩 관련 처리 필요
+        ]
+    },
+    {
+        id: 'reflecting_military_life_experience', type: 'milestone',
+        title: "군 생활 경험 정리와 회고",
+        description: "길었던 군 생활을 되돌아보며 경험을 정리하고 의미를 되새긴다.",
+        choices: [ // 임시 선택지
+            { text: "힘들었지만, 배운 것도 많았다", fatigueChange: -5, outcomeDescription: "돌이켜보면 힘들었지만 나를 성장시킨 시간이었다.", nextEventId: 'personal_time' },
+            { text: "빨리 잊고 싶다", fatigueChange: 0, outcomeDescription: "다시는 기억하고 싶지 않은 시간이다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'preparing_farewell_gifts_gratitude', type: 'relationship',
+        title: "전역 선물 준비와 감사 인사",
+        description: "그동안 함께했던 동료나 간부에게 줄 작은 선물을 준비하고 감사의 인사를 전한다.",
+        choices: [ // 임시 선택지
+            { text: "정성껏 선물을 준비하고 인사를 전한다", fatigueChange: -5, outcomeDescription: "작은 선물이지만 감사의 마음을 담아 전달했다.", nextEventId: 'personal_time' },
+            { text: "인사만 하고 나온다", fatigueChange: 0, outcomeDescription: "선물 준비는 못 했지만, 감사의 인사는 잊지 않았다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'building_contact_network_after_discharge', type: 'relationship',
+        title: "전역 후 연락망 구축",
+        description: "사회에 나가서도 연락할 동료들의 연락처를 미리 받아둔다.",
+        choices: [ // 임시 선택지
+            { text: "친했던 사람들과 연락처를 교환한다", fatigueChange: -1, outcomeDescription: "앞으로도 계속 연락하고 지내기로 약속했다.", nextEventId: 'personal_time' },
+            { text: "연락처 교환 없이 헤어진다", fatigueChange: 0, outcomeDescription: "군대 인연은 군대에서 끝이라고 생각한다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'preparing_anxiety_returning_society', type: 'milestone',
+        title: "사회 복귀 준비와 불안감",
+        description: "사회로 돌아갈 준비를 하지만, 잘 적응할 수 있을지 불안한 마음도 든다.",
+        choices: [ // 임시 선택지
+            { text: "긍정적인 마음으로 미래를 준비한다", fatigueChange: -2, outcomeDescription: "불안하지만, 잘 해낼 수 있을 거라고 스스로를 다독인다.", nextEventId: 'personal_time' },
+            { text: "사회생활에 대한 두려움을 느낀다", fatigueChange: 5, outcomeDescription: "오랜 군 생활로 인해 사회에 잘 적응할 수 있을지 걱정된다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'planning_use_skills_learned_military', type: 'milestone',
+        title: "군 생활 중 습득한 기술 활용 계획",
+        description: "군대에서 배운 기술이나 경험을 사회에서 어떻게 활용할지 계획해본다.",
+        choices: [ // 임시 선택지
+            { text: "관련 분야 취업을 알아본다", fatigueChange: 1, outcomeDescription: "군 특기와 관련된 분야로 진출하는 것을 고려해본다.", nextEventId: 'personal_time' },
+            { text: "단순한 경험으로 남겨둔다", fatigueChange: 0, outcomeDescription: "군 경험은 군 경험일 뿐, 크게 활용할 생각은 없다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'buying_first_civilian_clothes_after_discharge', type: 'milestone',
+        title: "전역 후 첫 민간인 옷 구매",
+        description: "전역 후 처음으로 내 마음에 드는 민간인 옷을 사러 간다.",
+        choices: [ // 임시 선택지
+            { text: "유행하는 스타일로 구매한다", fatigueChange: -5, outcomeDescription: "오랜만에 쇼핑을 하니 기분이 좋다. 최신 유행 스타일로 골랐다.", nextEventId: 'personal_time' },
+            { text: "편안한 스타일 위주로 구매한다", fatigueChange: -3, outcomeDescription: "군복처럼 편한 옷이 최고다. 편한 옷 위주로 골랐다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'organizing_military_life_memories_records', type: 'milestone',
+        title: "군 생활 추억 기록 정리",
+        description: "사진, 편지, 일기 등 군 생활 동안의 기록들을 정리하며 추억을 되새긴다.",
+        choices: [ // 임시 선택지
+            { text: "소중하게 보관한다", fatigueChange: -2, outcomeDescription: "힘들었지만 소중한 추억이다. 잘 정리해서 보관해야지.", nextEventId: 'personal_time' },
+            { text: "다 버린다", fatigueChange: 0, outcomeDescription: "과거는 과거일 뿐. 미련 없이 정리했다.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'final_tour_unit_farewell', type: 'milestone',
+        title: "마지막 부대 순회와 작별 인사",
+        description: "부대를 떠나기 전, 정들었던 장소들을 둘러보고 마지막 인사를 나눈다.",
+        choices: [ // 임시 선택지
+            { text: "시원섭섭한 마음으로 둘러본다", fatigueChange: 0, outcomeDescription: "이곳을 떠난다는 것이 아직 실감 나지 않는다.", nextEventId: 'personal_time' },
+            { text: "빨리 부대를 나가고 싶다", fatigueChange: -5, outcomeDescription: "마지막까지 있고 싶지 않다. 빨리 나가자.", nextEventId: 'personal_time' }
+        ]
+    },
+    {
+        id: 'discharge_day_leaving_gate', type: 'milestone', // 기존에 있던 이벤트 (참고용)
+        title: "전역 당일 부대 정문을 나서는 순간",
+        description: "모든 절차를 마치고 마침내 부대 정문을 나선다. 시원섭섭한 기분이다.",
+        choices: [
+            { text: "뒤도 돌아보지 않고 간다", fatigueChange: -100, outcomeDescription: "드디어 끝났다! 자유다!", nextEventId: 'game_clear' }, // 게임 클리어 이벤트 ID (예시)
+            { text: "정든 부대를 한번 돌아본다", fatigueChange: -90, outcomeDescription: "힘들었지만 많은 것을 배우고 간다. 안녕히 계십시오.", nextEventId: 'game_clear' } // 게임 클리어 이벤트 ID (예시)
+        ]
+    },
+    {
+        id: 'game_clear', type: 'system', // 게임 클리어 상태를 나타내는 가상 이벤트
+        title: "전역",
+        description: "축하합니다! 무사히 군 복무를 마치고 전역했습니다!",
+        // 이 이벤트는 게임 종료 로직을 트리거해야 함 (메인 스크립트에서 처리)
+    }
+
+// ]; // 실제 파일에서는 이 줄로 events 배열이 끝납니다.
 
 
     
